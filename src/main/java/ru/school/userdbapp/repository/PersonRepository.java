@@ -1,14 +1,21 @@
 package ru.school.userdbapp.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
 import ru.school.userdbapp.entity.Person;
-import ru.school.userdbapp.entity.PersonId;
 import java.util.List;
 
-public interface PersonRepository extends JpaRepository<Person, PersonId> {
+@Repository
+public class PersonRepository {
 
-    @Query("SELECT p FROM Person p WHERE p.cityOfLiving = :city")
-    List<Person> findByCityOfLiving(@Param("city") String city);
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<Person> findByCityOfLiving(String city) {
+        return entityManager.createQuery(
+                        "SELECT p FROM Person p WHERE p.cityOfLiving = :city", Person.class)
+                .setParameter("city", city)
+                .getResultList();
+    }
 }
